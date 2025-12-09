@@ -28,7 +28,7 @@ python repeatfinder.py find \
     --minlen 20000
 ```
 This execution would generate a .tsv file that contains the long repeat results.
-This script identifies repeat regions within the input genome. Given a dataset as input, it produces a TSV file containing the coordinates, lengths and number of repeats, together with a homology score for each repeat, as well as a summary report (TXT) describing overall results.
+This script identifies repeat regions within the input genome. Given a dataset as input, it produces a TSV file containing the coordinates, lengths and number of repeats, together with a homology score for each repeat.
 When running the tool, the user must specify the input file and a set of parameters. These parameters govern the speed, sensitivity, and memory usage of the algorithm. To make the tool more convenient, we provide several predefined parameter presets—such as fast and balanced. Users may either rely on these presets or manually set their own parameter combinations.
 
 ## 3. accuracy
