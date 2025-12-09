@@ -33,6 +33,57 @@ python evaluate_repeats.py \
     --overlap 0.8
 ```
 
+## 4. Benchmark: other package performance
+
+**minimap2** and **mummer4** are 2 tools rely on **seed-based approach**:
+
+- Minimap2 is a fast, flexible long-read and genome aligner (https://github.com/lh3/minimap2)
+- MUMmer4 is a high-precision genome comparison toolkit (https://github.com/mummer4/mummer)
+
+When aligning a genome to itself, any repeated segment will appear as an off-diagonal match, making both tools powerful for detecting long genomic repeats.
+
+Since our algorithm is also **seed-based**, we compare our algorthm with minimap2 and mummer4.
+
+### minimap2
+#### run minimap2 on the synthesized data:
+```bash
+minimap2 -x asm5 -t 1 \
+-N 1000 \
+-p 0.0   \
+synthetic_genome.fasta synthetic_genome.fasta > syn.self.asm5.paf
+```
+#### minimap2 accuracy
+**minimap2** generates a `.paf` file as the result. For the convenience to calculate the accuracy, following command could transform the result into a `.tsv` file:
+```bash
+python transform.py -i syn.self.asm5.paf -o syn_transform.tsv
+```
+After transformed into `.tsv`, the accuracy could be calculated by:
+```bash
+python evaluate_repeats.py \
+    --truth ground_truth_repeats.tsv\
+    --pred syn_transform.tsv\
+    --overlap 0.8\
+    --pred-format minimap
+```
+
+### mummer4
+#### run mummer4 on the synthesized data:
+```bash
+nucmer -p out synthetic_genome.fasta synthetic_genome.fasta
+mummerplot --fat --png -p out out.delta
+show-coords -rcl out.delta > out.coords
+show-coords -rcl -T out.delta > syn_out.tsv
+```
+#### mummer4 accuracy
+```bash
+python evaluate_repeats.py \
+    --truth ground_truth_repeats.tsv \
+    --pred syn_out.tsv \
+    --truth-format groundtruth \
+    --pred-format mummer \
+    --overlap 0.8
+```
+
 ## 4. find the long repeats in the large data: the Arabidopsis_thaliana chromosome
 
 To save time and resources, only one chromosome is used to find long repeats. Chromosome 1 of Arabidopsis_thaliana is used in this case.
@@ -62,7 +113,7 @@ python visualize_for_our_software.py results/arabidopsis_chr1_step4.tsv
 
 To further inspect how **minimap** and **mummer** perform in Arabidopsis_thaliana chromosome, we also did the analysis and visualization respectively.
 
-### minimap
+### minimap2
 
 ```bash
 samtools faidx Arabidopsis_thaliana.TAIR10.dna.toplevel.fa 1 > chr1.fa
@@ -71,13 +122,13 @@ minimap2 -x asm5 -t 1 \
 -p 0.0   \
 chr1.fa chr1.fa > chr1.self.asm5.paf
 ```
-After **minimap** out put the result in `.paf` file, we can visualize the result:
+After **minimap2** out put the result in `.paf` file, we can visualize the result:
 ```bash
 python visualize_for_minimap.py chr1.self.asm5.paf
 ```
 This command would generate a `_transform.tsv` in the current directory, convenient for further analysis or other visualization. Also, 4 plots of the results is generated.
 
-### mummer
+### mummer4
 
 ```bash
 samtools faidx Arabidopsis_thaliana.TAIR10.dna.toplevel.fa 1 > chr1.fa
@@ -86,7 +137,7 @@ mummerplot --fat --png -p out out.delta
 show-coords -rcl out.delta > out.coords
 show-coords -rcl -T out.delta > chr1_out.tsv
 ```
-After **mummer** generated `.csv` as the results, we can visualize them:
+After **mummer4** generated `.csv` as the results, we can visualize them:
 ```bash
 python visualize_for_mummer.py chr1_out.tsv
 ```
