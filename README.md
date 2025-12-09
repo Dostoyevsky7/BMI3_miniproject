@@ -6,6 +6,12 @@ The whole pipeline is as follows:
 
 ## 1. generate synthesized data
 
+First, we used data.py to generate a small test dataset by running:
+```bash
+python data.py
+```
+This script creates a synthetic genome containing 20 implanted repeats (synthetic_genome.fasta) along with the corresponding ground-truth list (ground_truth_repeats.tsv).
+
 ## 2. find long repeat in the synthesized data
 
 Based on the synthesized data, the core code `repeatfinder.py` could be executed to find long repeat:
@@ -22,6 +28,8 @@ python repeatfinder.py find \
     --minlen 20000
 ```
 This execution would generate a .tsv file that contains the long repeat results.
+This script identifies repeat regions within the input genome. Given a dataset as input, it produces a TSV file containing the coordinates, lengths and number of repeats, together with a homology score for each repeat, as well as a summary report (TXT) describing overall results.
+When running the tool, the user must specify the input file and a set of parameters. These parameters govern the speed, sensitivity, and memory usage of the algorithm. To make the tool more convenient, we provide several predefined parameter presets—such as fast and balanced. Users may either rely on these presets or manually set their own parameter combinations.
 
 ## 3. accuracy
 
