@@ -55,5 +55,39 @@ Similarly, this would also generate a `.tsv` containing long repeats found.
 
 Since Arabidopsis_thaliana does not have a ground truth of long repeat in the genome, we provide visualization methods based on the results:
 ```bash
-
+python visualize_for_our_software.py results/arabidopsis_chr1_step4.tsv
 ```
+
+## 6. Benchmark of minimap & mummer in Arabidopsis_thaliana chromosome
+
+To further inspect how **minimap** and **mummer** perform in Arabidopsis_thaliana chromosome, we also did the analysis and visualization respectively.
+
+### minimap
+
+```bash
+samtools faidx Arabidopsis_thaliana.TAIR10.dna.toplevel.fa 1 > chr1.fa
+minimap2 -x asm5 -t 1 \
+-N 1000 \
+-p 0.0   \
+chr1.fa chr1.fa > chr1.self.asm5.paf
+```
+After **minimap** out put the result in `.paf` file, we can visualize the result:
+```bash
+python visualize_for_minimap.py chr1.self.asm5.paf
+```
+This command would generate a `_transform.tsv` in the current directory, convenient for further analysis or other visualization. Also, 4 plots of the results is generated.
+
+### mummer
+
+```bash
+samtools faidx Arabidopsis_thaliana.TAIR10.dna.toplevel.fa 1 > chr1.fa
+nucmer -p out chr1.fa chr1.fa
+mummerplot --fat --png -p out out.delta
+show-coords -rcl out.delta > out.coords
+show-coords -rcl -T out.delta > chr1_out.tsv
+```
+After **mummer** generated `.csv` as the results, we can visualize them:
+```bash
+python visualize_for_mummer.py chr1_out.tsv
+```
+This command generates 4 plots.
