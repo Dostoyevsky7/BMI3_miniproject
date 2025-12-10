@@ -4,6 +4,106 @@ FindLongRepeat is a code developmed by our group to find long repeat in a certai
 
 The whole pipeline is as follows:
 
+# Genome Visualization and Analysis Environment
+
+This repository contains scripts and tools for visualizing and analyzing genome alignments, 
+including minimap2 PAF files and MUMmer4 show-coords outputs.
+
+To ensure full reproducibility, this document provides the exact development environment 
+(WSL2 + Ubuntu + Minimap2 + MUMmer4 + Conda), along with step-by-step instructions for rebuilding it from scratch.
+
+## 1. System Environment (WSL2)
+
+The project was developed on **Windows 11** using **WSL2** running Ubuntu 24.04.
+
+System details:
+
+```bash
+Distributor ID: Ubuntu
+Description: Ubuntu 24.04.3 LTS
+Release: 24.04
+Codename: noble
+Linux DESKTOP-OEGU2PR 6.6.87.2-microsoft-standard-WSL2 #1 SMP PREEMPT_DYNAMIC Thu Jun 5 18:30:46 UTC 2025 x86_64
+```
+
+If you are also using Windows, install WSL2:
+
+```bash
+wsl --install
+```
+
+## 2. Required External Tools
+
+### Minimap2
+```bash
+minimap2 --version
+2.26-r1175
+```
+
+### MUMmer4
+```bash
+nucmer --version
+4.0.1
+
+mummer --version
+4.0.1
+```
+
+
+If these are missing, install via APT:
+```bash
+sudo apt update
+sudo apt install minimap2 mummer
+```
+
+## 3. Conda Environment Setup
+
+All Python dependencies are stored in:
+```bash
+environment.yml
+```
+
+### Create the same environment:
+```bash
+conda env create -f environment.yml
+```
+
+### Activate it:
+
+```bash
+conda activate base
+```
+
+## 4. System Package List (APT)
+
+This project also includes a full list of installed APT packages:
+```bash
+apt_installed.txt
+```
+
+This file ensures bit-level reproducibility.
+
+To restore all APT packages (optional):
+
+```bash
+sudo xargs -a apt_installed.txt apt install -y
+```
+
+---
+
+# Repository Contents
+
+| File | Description |
+|------|-------------|
+| `environment.yml` | Conda environment for all Python dependencies |
+| `apt_installed.txt` | Complete list of APT-installed system packages |
+| `scripts/` | Analysis and visualization scripts |
+| `data/` | Example alignment outputs (optional) |
+
+---
+
+# Pipeline
+
 ## 1. generate synthesized data
 
 First, we used data.py to generate a small test dataset by running:
