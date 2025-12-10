@@ -7,7 +7,7 @@ The whole pipeline is as follows:
 # Environment Setup
 
 This repository contains scripts and tools for visualizing and analyzing genome alignments, 
-including minimap2 PAF files and MUMmer4 show-coords outputs.
+including Minimap2 PAF files and MUMmer4 show-coords outputs.
 
 To ensure full reproducibility, this document provides the exact development environment 
 (WSL2 + Ubuntu + Minimap2 + MUMmer4 + Conda), along with step-by-step instructions for rebuilding it from scratch.
@@ -36,7 +36,7 @@ wsl --install
 
 ### Minimap2
 ```bash
-minimap2 --version
+Minimap2 --version
 2.26-r1175
 ```
 
@@ -53,7 +53,7 @@ mummer --version
 If these are missing, install via APT:
 ```bash
 sudo apt update
-sudo apt install minimap2 mummer
+sudo apt install Minimap2 mummer
 ```
 
 ## 3. Conda Environment Setup
@@ -143,25 +143,25 @@ python evaluate_repeats.py \
 
 ## 4. Benchmark: other package performance
 
-**minimap2** and **mummer4** are 2 tools rely on **seed-based approach**:
+**Minimap2** and **MUMmer4** are 2 tools rely on **seed-based approach**:
 
 - Minimap2 is a fast, flexible long-read and genome aligner (https://github.com/lh3/minimap2)
 - MUMmer4 is a high-precision genome comparison toolkit (https://github.com/mummer4/mummer)
 
 When aligning a genome to itself, any repeated segment will appear as an off-diagonal match, making both tools powerful for detecting long genomic repeats.
 
-Since our algorithm is also **seed-based**, we compare our algorthm with minimap2 and mummer4.
+Since our algorithm is also **seed-based**, we compare our algorthm with Minimap2 and MUMmer4.
 
-### minimap2
-#### run minimap2 on the synthesized data:
+### Minimap2
+#### run Minimap2 on the synthesized data:
 ```bash
 minimap2 -x asm5 -t 1 \
 -N 1000 \
 -p 0.0   \
 synthetic_genome.fasta synthetic_genome.fasta > syn.self.asm5.paf
 ```
-#### minimap2 accuracy
-**minimap2** generates a `.paf` file as the result. For the convenience to calculate the accuracy, following command could transform the result into a `.tsv` file:
+#### Minimap2 accuracy
+**Minimap2** generates a `.paf` file as the result. For the convenience to calculate the accuracy, following command could transform the result into a `.tsv` file:
 ```bash
 python transform.py -i syn.self.asm5.paf -o syn_transform.tsv
 ```
@@ -174,15 +174,15 @@ python evaluate_repeats.py \
     --pred-format minimap
 ```
 
-### mummer4
-#### run mummer4 on the synthesized data:
+### MUMmer4
+#### run MUMmer4 on the synthesized data:
 ```bash
 nucmer -p out synthetic_genome.fasta synthetic_genome.fasta
 mummerplot --fat --png -p out out.delta
 show-coords -rcl out.delta > out.coords
 show-coords -rcl -T out.delta > syn_out.tsv
 ```
-#### mummer4 accuracy
+#### MUMmer4 accuracy
 ```bash
 python evaluate_repeats.py \
     --truth ground_truth_repeats.tsv \
@@ -217,11 +217,11 @@ Since Arabidopsis_thaliana does not have a ground truth of long repeat in the ge
 python visualize_for_our_software.py results/arabidopsis_chr1_step4.tsv
 ```
 
-## 6. Benchmark of minimap & mummer in Arabidopsis_thaliana chromosome
+## 6. Benchmark of minimap & MUMmer4 in Arabidopsis_thaliana chromosome
 
-To further inspect how **minimap** and **mummer** perform in Arabidopsis_thaliana chromosome, we also did the analysis and visualization respectively.
+To further inspect how **Minimap** and **MUMmer4** perform in Arabidopsis_thaliana chromosome, we also did the analysis and visualization respectively.
 
-### minimap2
+### Minimap2
 
 ```bash
 samtools faidx Arabidopsis_thaliana.TAIR10.dna.toplevel.fa 1 > chr1.fa
@@ -230,13 +230,13 @@ minimap2 -x asm5 -t 1 \
 -p 0.0   \
 chr1.fa chr1.fa > chr1.self.asm5.paf
 ```
-After **minimap2** out put the result in `.paf` file, we can visualize the result:
+After **Minimap2** out put the result in `.paf` file, we can visualize the result:
 ```bash
 python visualize_for_minimap.py chr1.self.asm5.paf
 ```
 This command would generate a `_transform.tsv` in the current directory, convenient for further analysis or other visualization. Also, 4 plots of the results is generated.
 
-### mummer4
+### MUMmer4
 
 ```bash
 samtools faidx Arabidopsis_thaliana.TAIR10.dna.toplevel.fa 1 > chr1.fa
@@ -245,7 +245,7 @@ mummerplot --fat --png -p out out.delta
 show-coords -rcl out.delta > out.coords
 show-coords -rcl -T out.delta > chr1_out.tsv
 ```
-After **mummer4** generated `.csv` as the results, we can visualize them:
+After **MUMmer4** generated `.csv` as the results, we can visualize them:
 ```bash
 python visualize_for_mummer.py chr1_out.tsv
 ```
