@@ -4,7 +4,7 @@ FindLongRepeat is a code developmed by our group to find long repeat in a certai
 
 The whole pipeline is as follows:
 
-# Genome Visualization and Analysis Environment
+# Environment Setup
 
 This repository contains scripts and tools for visualizing and analyzing genome alignments, 
 including minimap2 PAF files and MUMmer4 show-coords outputs.
