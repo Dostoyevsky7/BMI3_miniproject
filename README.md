@@ -234,7 +234,7 @@ minimap2 -x asm5 -t 1 \
     -N 1000 \
     -p 0.0 \
     data/arabidopsis/chr1.fa data/arabidopsis/chr1.fa \
-    > results/arabidopsis/chr1.self.minimap.paf
+    results/arabidopsis/chr1.self.minimap.paf
 ```
 After **Minimap2** out put the result in `.paf` file, we can visualize the result:
 ```bash
