@@ -108,7 +108,7 @@ sudo xargs -a apt_installed.txt apt install -y
 
 First, we used data.py to generate a small test dataset by running:
 ```bash
-python data.py
+python scripts/data.py --out data/synthetic/
 ```
 This script creates a synthetic genome containing 20 implanted repeats (synthetic_genome.fasta) along with the corresponding ground-truth list (ground_truth_repeats.tsv).
 
@@ -116,9 +116,9 @@ This script creates a synthetic genome containing 20 implanted repeats (syntheti
 
 Based on the synthesized data, the core code `repeatfinder.py` could be executed to find long repeat:
 ```bash
-python repeatfinder.py find \
-    --genome synthetic_genome.fasta \
-    --out results/far-fast.tsv \
+python scripts/repeatfinder.py find \
+    --genome data/synthetic/synthetic_genome.fasta \
+    --out results/synthetic/far-fast.tsv \
     --chromosome 1 \
     --mask 11110111101111 \
     --step 4 \
@@ -135,9 +135,9 @@ When running the tool, the user must specify the input file and a set of paramet
 
 `evaluate_repeats.py` is used to evaluate the results of the generated long repeats, comparing to the ground truth synthesized.
 ```bash
-python evaluate_repeats.py \
-    --truth ground_truth_repeats.tsv \
-    --pred results/far-fast.tsv \
+python scripts/evaluate_repeats.py \
+    --truth data/synthetic/ground_truth_repeats.tsv \
+    --pred results/synthetic/far-fast.tsv \
     --overlap 0.8
 ```
 
@@ -158,35 +158,37 @@ Since our algorithm is also **seed-based**, we compare our algorthm with Minimap
 minimap2 -x asm5 -t 1 \
 -N 1000 \
 -p 0.0   \
-synthetic_genome.fasta synthetic_genome.fasta > syn.self.asm5.paf
+data/synthetic/synthetic_genome.fasta data/synthetic/synthetic_genome.fasta > results/synthetic/syn.minimap.paf
 ```
 #### Minimap2 accuracy
 **Minimap2** generates a `.paf` file as the result. For the convenience to calculate the accuracy, following command could transform the result into a `.tsv` file:
 ```bash
-python transform.py -i syn.self.asm5.paf -o syn_transform.tsv
+python scripts/transform.py \
+    -i results/synthetic/syn.minimap.paf \
+    -o results/synthetic/syn_transform_minimap.tsv
 ```
 After transformed into `.tsv`, the accuracy could be calculated by:
 ```bash
-python evaluate_repeats.py \
-    --truth ground_truth_repeats.tsv\
-    --pred syn_transform.tsv\
-    --overlap 0.8\
+python scripts/evaluate_repeats.py \
+    --truth data/synthetic/ground_truth_repeats.tsv \
+    --pred results/synthetic/syn_transform_minimap.tsv \
+    --overlap 0.8 \
     --pred-format minimap
 ```
 
 ### MUMmer4
 #### run MUMmer4 on the synthesized data:
 ```bash
-nucmer -p out synthetic_genome.fasta synthetic_genome.fasta
+nucmer -p out data/synthetic/synthetic_genome.fasta data/synthetic/synthetic_genome.fasta
 mummerplot --fat --png -p out out.delta
 show-coords -rcl out.delta > out.coords
-show-coords -rcl -T out.delta > syn_out.tsv
+show-coords -rcl -T out.delta > results/synthetic/mummer_syn_out.tsv
 ```
 #### MUMmer4 accuracy
 ```bash
-python evaluate_repeats.py \
-    --truth ground_truth_repeats.tsv \
-    --pred syn_out.tsv \
+python scripts/evaluate_repeats.py \
+    --truth data/synthetic/ground_truth_repeats.tsv \
+    --pred results/synthetic/mummer_syn_out.tsv \
     --truth-format groundtruth \
     --pred-format mummer \
     --overlap 0.8
@@ -197,9 +199,9 @@ python evaluate_repeats.py \
 To save time and resources, only one chromosome is used to find long repeats. Chromosome 1 of Arabidopsis_thaliana is used in this case.
 
 ```bash
-python repeatfinder.py find \
-    --genome Arabidopsis_thaliana.TAIR10.dna.toplevel.fa \
-    --out results/arabidopsis_chr1_step4.tsv \
+python scripts/repeatfinder.py find \
+    --genome data/arabidopsis/Arabidopsis_thaliana.TAIR10.dna.toplevel.fa \
+    --out results/arabidopsis/arabidopsis_chr1_step4.tsv \
     --chromosome 1 \
     --mask 11110111101111 \
     --step 4 \
@@ -214,7 +216,9 @@ Similarly, this would also generate a `.tsv` containing long repeats found.
 
 Since Arabidopsis_thaliana does not have a ground truth of long repeat in the genome, we provide visualization methods based on the results:
 ```bash
-python visualize_for_our_software.py results/arabidopsis_chr1_step4.tsv
+ython scripts/visualize_for_our_software.py \
+    results/arabidopsis/arabidopsis_chr1_step4.tsv \
+    --out results/arabidopsis/plots/our_alg
 ```
 
 ## 6. Benchmark of minimap & MUMmer4 in Arabidopsis_thaliana chromosome
@@ -224,29 +228,36 @@ To further inspect how **Minimap** and **MUMmer4** perform in Arabidopsis_thalia
 ### Minimap2
 
 ```bash
-samtools faidx Arabidopsis_thaliana.TAIR10.dna.toplevel.fa 1 > chr1.fa
+samtools faidx data/arabidopsis/Arabidopsis_thaliana.TAIR10.dna.toplevel.fa 1 > data/arabidopsis/chr1.fa
+
 minimap2 -x asm5 -t 1 \
--N 1000 \
--p 0.0   \
-chr1.fa chr1.fa > chr1.self.asm5.paf
+    -N 1000 \
+    -p 0.0 \
+    data/arabidopsis/chr1.fa data/arabidopsis/chr1.fa \
+    > results/arabidopsis/chr1.self.minimap.paf
 ```
 After **Minimap2** out put the result in `.paf` file, we can visualize the result:
 ```bash
-python visualize_for_minimap.py chr1.self.asm5.paf
+python scripts/visualize_for_minimap.py \
+    results/arabidopsis/chr1.self.minimap.paf \
+    --out results/arabidopsis/plots/minimap
 ```
 This command would generate a `_transform.tsv` in the current directory, convenient for further analysis or other visualization. Also, 4 plots of the results is generated.
 
 ### MUMmer4
 
 ```bash
-samtools faidx Arabidopsis_thaliana.TAIR10.dna.toplevel.fa 1 > chr1.fa
-nucmer -p out chr1.fa chr1.fa
+samtools faidx data/arabidopsis/Arabidopsis_thaliana.TAIR10.dna.toplevel.fa 1 > data/arabidopsis/chr1.fa
+
+nucmer -p out data/arabidopsis/chr1.fa data/arabidopsis/chr1.fa
 mummerplot --fat --png -p out out.delta
 show-coords -rcl out.delta > out.coords
-show-coords -rcl -T out.delta > chr1_out.tsv
+show-coords -rcl -T out.delta > results/arabidopsis/mummer_chr1_out.tsv
 ```
 After **MUMmer4** generated `.csv` as the results, we can visualize them:
 ```bash
-python visualize_for_mummer.py chr1_out.tsv
+python scripts/visualize_for_mummer.py \
+    results/arabidopsis/mummer_chr1_out.tsv \
+    --out results/arabidopsis/plots/mummer
 ```
 This command generates 4 plots.
