@@ -216,7 +216,7 @@ Similarly, this would also generate a `.tsv` containing long repeats found.
 
 Since Arabidopsis_thaliana does not have a ground truth of long repeat in the genome, we provide visualization methods based on the results:
 ```bash
-ython scripts/visualize_for_our_software.py \
+python scripts/visualize_for_our_software.py \
     results/arabidopsis/arabidopsis_chr1_step4.tsv \
     --out results/arabidopsis/plots/our_alg
 ```
