@@ -98,7 +98,8 @@ sudo xargs -a apt_installed.txt apt install -y
 | `environment.yml` | Conda environment for all Python dependencies |
 | `apt_installed.txt` | Complete list of APT-installed system packages |
 | `scripts/` | Analysis and visualization scripts |
-| `data/` | Example alignment outputs (optional) |
+| `data/` | fasta data of chromosome and ground truth |
+| `results/` | result of synthetic data and plant genome; including `.tsv` and plots |
 
 ---
 
